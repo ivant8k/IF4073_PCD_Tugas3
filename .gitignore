@@ -1,0 +1,46 @@
+# MATLAB temporary & autosave files
+*.asv
+*.m~
+*.slxc
+*.mex*
+*.mat
+!src/deep_learning/weights/*.mat
+
+# Python cache & virtualenv
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Jupyter / Colab checkpoints
+.ipynb_checkpoints/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+[Nn]on[Dd]esktop.ini
+
+# Large dataset archives & unpacked heavy files
+data/bsds500/*.zip
+data/camvid/*.zip
+data/camvid/701_StillsRaw_full/
+data/camvid/LabeledApproved_full/
+*.tar.gz
+
+# Model weights (large files)
+src/deep_learning/weights/*.pth
+src/deep_learning/weights/*.pt
+src/deep_learning/weights/*.onnx
+src/deep_learning/weights/*.h5
+!src/deep_learning/weights/.gitkeep
+
+# Logs and debug outputs
+*.log
