@@ -44,3 +44,5 @@ src/deep_learning/weights/*.h5
 
 # Logs and debug outputs
 *.log
+
+data/
