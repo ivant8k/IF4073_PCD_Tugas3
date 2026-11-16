@@ -7,7 +7,7 @@ Dataset ini digunakan untuk modul **Semantic Segmentation menggunakan Deep Learn
   http://web4.cs.ucl.ac.uk/staff/g.brostow/MotionSegRecData/files/701_StillsRaw_full.zip
 - **Anotasi Piksel (Pixel Labels)**:  
   http://web4.cs.ucl.ac.uk/staff/g.brostow/MotionSegRecData/data/LabeledApproved_full.zip
-- Kaggle: 
+- Kaggle: https://www.kaggle.com/datasets/carlolepelaars/camvid
 
 ## 11 Kelas Target yang Digunakan:
 1. Sky
