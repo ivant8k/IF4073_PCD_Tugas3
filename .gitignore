@@ -41,6 +41,8 @@ src/deep_learning/weights/*.pt
 src/deep_learning/weights/*.onnx
 src/deep_learning/weights/*.h5
 !src/deep_learning/weights/.gitkeep
+!src/deep_learning/weights/best_model.pth
+src/deep_learning/outputs/
 
 # Logs and debug outputs
 *.log
