@@ -1,4 +1,4 @@
-﻿function E = edge_prewitt(gray, t)
+function E = edge_prewitt(gray, t)
 Gx = [-1 0 1; -1 0 1; -1 0 1];
 Gy = Gx';
 gx = my_conv2(gray, Gx);

@@ -1,4 +1,4 @@
-﻿function out = my_conv2(I, K)
+function out = my_conv2(I, K)
 I = double(I);
 K = rot90(double(K), 2);
 [H, W] = size(I);

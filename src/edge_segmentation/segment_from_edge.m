@@ -1,12 +1,16 @@
 function [mask, seg] = segment_from_edge(img, E, r, minArea)
 mask = imclose(E, strel('disk', r));
 mask = imfill(mask, 'holes');
-big = bwareaopen(mask, minArea);
-if any(big(:))
-    mask = big;
+obj = bwareaopen(imclearborder(mask), minArea);
+if ~any(obj(:))
+    obj = bwareaopen(mask, minArea);
 end
-if any(mask(:))
-    mask = bwareafilt(mask, 1);
+if ~any(obj(:))
+    obj = mask;
 end
+if any(obj(:))
+    obj = bwareafilt(obj, 1);
+end
+mask = obj;
 seg = img .* uint8(mask);
 end

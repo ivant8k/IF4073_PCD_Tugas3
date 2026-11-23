@@ -1,4 +1,4 @@
-﻿function E = edge_log(gray, t, sigma)
+function E = edge_log(gray, t, sigma)
 n = 2 * ceil(3 * sigma) + 1;
 h = (n - 1) / 2;
 [x, y] = meshgrid(-h:h, -h:h);

@@ -1,4 +1,4 @@
-﻿function E = edge_roberts(gray, t)
+function E = edge_roberts(gray, t)
 G1 = [1 0; 0 -1];
 G2 = [0 1; -1 0];
 g1 = my_conv2(gray, G1);

@@ -1,4 +1,4 @@
-﻿function E = edge_sobel(gray, t)
+function E = edge_sobel(gray, t)
 Gx = [-1 0 1; -2 0 2; -1 0 1];
 Gy = Gx';
 gx = my_conv2(gray, Gx);
