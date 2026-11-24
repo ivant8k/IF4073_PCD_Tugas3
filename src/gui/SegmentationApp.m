@@ -226,7 +226,7 @@ classdef SegmentationApp < matlab.apps.AppBase
 
                 operator = app.EdgeOpDropDown.Value;
                 tStart = tic;
-                [edgeMap, objMask, segObjImg, isStub] = gui_helpers.call_edge_segmentation( ...
+                [edgeMap, objMask, segObjImg] = run_edge_segmentation( ...
                     app.CurrentImageEdge, operator, params);
                 elapsed = toc(tStart);
 
@@ -235,13 +235,8 @@ classdef SegmentationApp < matlab.apps.AppBase
                 app.showImageOnAxes(app.EdgeAxMask, objMask, 'Mask Biner Objek');
                 app.showImageOnAxes(app.EdgeAxSeg, segObjImg, 'Objek Terisolasi');
 
-                if isStub
-                    app.EdgeStatusLabel.Text = sprintf( ...
-                        'Status: Selesai dalam %.3f dtk [Mode Stub sementara sebelum merge Modul Anggota A]', elapsed);
-                else
-                    app.EdgeStatusLabel.Text = sprintf( ...
-                        'Status: Selesai dalam %.3f dtk (Operator: %s)', elapsed, operator);
-                end
+                app.EdgeStatusLabel.Text = sprintf( ...
+                    'Status: Selesai dalam %.3f dtk (Operator: %s)', elapsed, operator);
             catch ME
                 if isvalid(dlg), close(dlg); end
                 uialert(app.UIFigure, ME.message, 'Gagal Memproses Tab 1');
@@ -318,7 +313,7 @@ classdef SegmentationApp < matlab.apps.AppBase
                 minBlock = str2double(app.MinBlockDropDown.Value);
 
                 tStart = tic;
-                [splitVisImg, mergedImg, stats, isStub] = gui_helpers.call_split_and_merge( ...
+                [splitVisImg, mergedImg, stats] = split_and_merge( ...
                     app.CurrentImageSplit, splitThresh, mergeThresh, minBlock);
                 elapsed = toc(tStart);
 
@@ -331,13 +326,7 @@ classdef SegmentationApp < matlab.apps.AppBase
                     regionMsg = sprintf(' | Region: %d -> %d', stats.numSplitRegions, stats.numMergedRegions);
                 end
 
-                if isStub
-                    app.SplitStatusLabel.Text = sprintf( ...
-                        'Status: Selesai %.3f dtk%s [Mode Stub sementara sebelum merge Modul Anggota A]', ...
-                        elapsed, regionMsg);
-                else
-                    app.SplitStatusLabel.Text = sprintf('Status: Selesai dalam %.3f dtk%s', elapsed, regionMsg);
-                end
+                app.SplitStatusLabel.Text = sprintf('Status: Selesai dalam %.3f dtk%s', elapsed, regionMsg);
             catch ME
                 if isvalid(dlg), close(dlg); end
                 uialert(app.UIFigure, ME.message, 'Gagal Memproses Tab 2');
@@ -378,7 +367,7 @@ classdef SegmentationApp < matlab.apps.AppBase
             end
 
             dlg = uiprogressdlg(app.UIFigure, ...
-                'Title', 'Semantic Segmentation (Offline)', ...
+                'Title', 'Semantic Segmentation', ...
                 'Message', 'Memuat model lokal DeepLabv3+ dan menjalankan inferensi...', ...
                 'Indeterminate', 'on');
             try
