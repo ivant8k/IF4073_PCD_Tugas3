@@ -261,7 +261,7 @@ classdef gui_helpers
 
         function render_legend(ax, classPercentages)
             % RENDER_LEGEND Menggambar legend warna 11 kelas CamVid pada UIAxes Tab 3
-            % agar selalu terlihat rapi tanpa pop-up figure eksternal.
+            % dalam tata letak 3 baris (4, 4, 3 label) agar mudah dibaca.
 
             if nargin < 2
                 classPercentages = struct();
@@ -269,17 +269,36 @@ classdef gui_helpers
 
             classes = gui_helpers.get_camvid_classes();
             n = numel(classes);
+            maxCols = 4;
+            numRows = 3;
+            rowCounts = [4, 4, 3];
 
             cla(ax);
             hold(ax, 'on');
             for i = 1:n
+                % Petakan indeks 1..11 ke baris (4, 4, 3) dari atas ke bawah
+                if i <= 4
+                    rowIdx = 1;
+                    colIdx = i - 1;
+                elseif i <= 8
+                    rowIdx = 2;
+                    colIdx = i - 5;
+                else
+                    rowIdx = 3;
+                    colIdx = i - 9;
+                end
+
+                % Pusatkan baris terakhir yang berisi 3 label agar seimbang
+                xOffset = (maxCols - rowCounts(rowIdx)) * 0.5;
+                x0 = xOffset + colIdx;
+                y0 = numRows - rowIdx;
+
                 rgbNorm = double(classes(i).rgb) / 255.0;
-                x0 = i - 1;
-                rectangle(ax, 'Position', [x0 + 0.04, 0.12, 0.92, 0.76], ...
+                rectangle(ax, 'Position', [x0 + 0.04, y0 + 0.12, 0.92, 0.76], ...
                     'FaceColor', rgbNorm, ...
                     'EdgeColor', [0.85, 0.87, 0.90], ...
-                    'LineWidth', 0.8, ...
-                    'Curvature', 0.12);
+                    'LineWidth', 0.9, ...
+                    'Curvature', 0.14);
 
                 % Hitung luminansi relatif untuk memilih teks putih atau gelap yang kontras
                 lum = 0.299 * double(classes(i).rgb(1)) + ...
@@ -294,20 +313,20 @@ classdef gui_helpers
                 labelStr = classes(i).name;
                 if isstruct(classPercentages) && isfield(classPercentages, labelStr)
                     pct = classPercentages.(labelStr);
-                    labelStr = sprintf('%s\n%.1f%%', labelStr, pct);
+                    labelStr = sprintf('%s (%.1f%%)', labelStr, pct);
                 end
 
-                text(ax, x0 + 0.5, 0.5, labelStr, ...
+                text(ax, x0 + 0.5, y0 + 0.5, labelStr, ...
                     'HorizontalAlignment', 'center', ...
                     'VerticalAlignment', 'middle', ...
-                    'FontSize', 8, ...
+                    'FontSize', 11.5, ...
                     'FontWeight', 'bold', ...
                     'Color', txtColor);
             end
             hold(ax, 'off');
 
-            xlim(ax, [0, n]);
-            ylim(ax, [0, 1]);
+            xlim(ax, [0, maxCols]);
+            ylim(ax, [0, numRows]);
             axis(ax, 'off');
         end
 

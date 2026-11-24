@@ -417,14 +417,21 @@ classdef SegmentationApp < matlab.apps.AppBase
             end
 
             classes = gui_helpers.get_camvid_classes();
-            lines = cell(1, numel(classes));
-            for i = 1:numel(classes)
+            nClasses = numel(classes);
+            vals = zeros(1, nClasses);
+            for i = 1:nClasses
                 cname = classes(i).name;
-                val = 0;
                 if isfield(classPct, cname)
-                    val = classPct.(cname);
+                    vals(i) = double(classPct.(cname));
                 end
-                lines{i} = sprintf('%-12s : %5.2f%%', cname, val);
+            end
+
+            % Urutkan distribusi kelas dari persentase terbesar ke terkecil
+            [~, order] = sort(vals, 'descend');
+            lines = cell(1, nClasses);
+            for k = 1:nClasses
+                idx = order(k);
+                lines{k} = sprintf('%-11s : %6.2f%%', classes(idx).name, vals(idx));
             end
             app.DLClassSummaryArea.Value = lines;
         end
@@ -749,7 +756,9 @@ classdef SegmentationApp < matlab.apps.AppBase
             app.DLClassSummaryArea = uitextarea(app.DLCtrlGrid, ...
                 'Editable', 'off', ...
                 'FontName', 'Consolas', ...
-                'FontSize', 9.5, ...
+                'FontSize', 12, ...
+                'BackgroundColor', [0.975, 0.980, 0.988], ...
+                'FontColor', app.ColorInk, ...
                 'Value', {'Belum ada hasil inferensi.'});
             app.DLClassSummaryArea.Layout.Row = 8; app.DLClassSummaryArea.Layout.Column = [1, 2];
 
@@ -757,12 +766,12 @@ classdef SegmentationApp < matlab.apps.AppBase
                 'FontSize', 9, 'FontColor', app.ColorMuted);
             lblMode.Layout.Row = 9; lblMode.Layout.Column = [1, 2];
 
-            % Panel Visualisasi Kanan (3 Axes + Legend Bar 11 Kelas + Status)
+            % Panel Visualisasi Kanan (3 Axes + Legend Bar 3 Baris + Status)
             app.DLViewPanel = uipanel(app.DLTabGrid);
             app.styleSurfacePanel(app.DLViewPanel);
 
             app.DLViewGrid = uigridlayout(app.DLViewPanel, [3, 3]);
-            app.DLViewGrid.RowHeight = {'1x', 82, 24};
+            app.DLViewGrid.RowHeight = {'1x', 168, 24};
             app.DLViewGrid.Padding = [12, 12, 12, 10];
             app.DLViewGrid.RowSpacing = 8;
             app.DLViewGrid.ColumnSpacing = 10;
@@ -779,6 +788,9 @@ classdef SegmentationApp < matlab.apps.AppBase
 
             app.DLAxLegend = uiaxes(app.DLViewGrid);
             app.DLAxLegend.Layout.Row = 2; app.DLAxLegend.Layout.Column = [1, 3];
+            if isprop(app.DLAxLegend, 'Toolbar') && ~isempty(app.DLAxLegend.Toolbar)
+                app.DLAxLegend.Toolbar.Visible = 'off';
+            end
 
             app.DLStatusLabel = uilabel(app.DLViewGrid, 'Text', 'Status: Siap.', ...
                 'FontSize', 9.5, 'FontColor', app.ColorMuted);
