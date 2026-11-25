@@ -1,9 +1,11 @@
 function L2 = merge_regions(I, L, T)
+% MERGE_REGIONS Menggabungkan region bertetangga (4-connectivity) bila selisih rata-rata intensitas <= T.
 n = max(L(:));
 area = accumarray(L(:), 1, [n 1]);
 total = accumarray(L(:), I(:), [n 1]);
 mu = total ./ area;
 
+% Bangun daftar pasangan region bertetangga secara horizontal dan vertikal (4-connectivity)
 a = L(:, 1:end-1);
 b = L(:, 2:end);
 P = [a(:) b(:)];
@@ -13,10 +15,12 @@ P = [P; a(:) b(:)];
 P = P(P(:, 1) ~= P(:, 2), :);
 P = unique(sort(P, 2), 'rows');
 
+% Urutkan pasangan berdasarkan kemiripan rata-rata terkecil agar penggabungan lebih stabil
 d = abs(mu(P(:, 1)) - mu(P(:, 2)));
 [~, idx] = sort(d);
 P = P(idx, :);
 
+% Gabungkan region bertetangga secara iteratif memakai struktur Disjoint-Set (Union-Find)
 parent = 1:n;
 changed = true;
 while changed
@@ -42,6 +46,7 @@ while changed
     end
 end
 
+% Petakan setiap label awal ke root akhirnya lalu beri nomor ulang label secara rapat (1..K)
 root = 1:n;
 for k = 1:n
     x = k;

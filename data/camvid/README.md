@@ -21,7 +21,7 @@ Dataset ini digunakan untuk modul **Semantic Segmentation menggunakan Deep Learn
 9. Car
 10. Pedestrian
 11. Bicyclist
-*(+ Kelas 0 / Void untuk piksel tak berlabel / background yang tidak masuk kategori)*
+*(Indeks 0–10 mengikuti urutan daftar di atas; piksel tak berlabel / Void dipetakan ke indeks 255 / `IGNORE_INDEX`)*
 
 ## Pembagian Data:
 - Train: 60%

@@ -1,4 +1,5 @@
 function [edgeMap, objMask, segObjImg] = run_edge_segmentation(img, operator, params)
+% RUN_EDGE_SEGMENTATION Menjalankan deteksi tepi dan ekstraksi objek sesuai operator terpilih.
 if nargin < 3
     params = struct();
 end
@@ -15,6 +16,7 @@ if ~isfield(params, 'minArea') || isempty(params.minArea)
     params.minArea = 500;
 end
 
+% Konversi citra masukan ke keabuan double untuk perhitungan gradien / Laplacian
 img = uint8(img);
 if size(img, 3) == 3
     gray = rgb2gray(img);
@@ -41,5 +43,6 @@ switch lower(char(operator))
         error('Operator tidak dikenal: %s', operator);
 end
 
+% Isolasi objek utama dari peta tepi biner
 [objMask, segObjImg] = segment_from_edge(img, edgeMap, params.morphRadius, params.minArea);
 end

@@ -47,4 +47,13 @@ src/deep_learning/outputs/
 # Logs and debug outputs
 *.log
 
-data/
+# Abaikan file dataset berat di data/, tetapi tetap lacak dokumentasi & daftar split CamVid
+data/*
+!data/bsds500/
+data/bsds500/*
+!data/bsds500/README.md
+!data/camvid/
+data/camvid/*
+!data/camvid/README.md
+!data/camvid/splits/
+!data/camvid/splits/*

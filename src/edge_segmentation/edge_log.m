@@ -1,8 +1,11 @@
 function E = edge_log(gray, t, sigma)
+% EDGE_LOG Deteksi tepi Laplacian of Gaussian (LoG) dengan ukuran kernel 2*ceil(3*sigma)+1.
 n = 2 * ceil(3 * sigma) + 1;
 h = (n - 1) / 2;
 [x, y] = meshgrid(-h:h, -h:h);
 r2 = x.^2 + y.^2;
+
+% Kernel analitik Mexican Hat dan normalisasi zero-mean agar area datar bernilai nol
 K = -(1 / (pi * sigma^4)) * (1 - r2 / (2 * sigma^2)) .* exp(-r2 / (2 * sigma^2));
 K = K - mean(K(:));
 R = my_conv2(gray, K);

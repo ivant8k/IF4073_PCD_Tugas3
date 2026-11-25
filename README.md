@@ -12,8 +12,8 @@ Proyek ini disusun untuk memenuhi **Tugas 3 IF4073 Pemrosesan Citra Digital – 
 ## Anggota Kelompok
 | No | Nama Lengkap | NIM | Pembagian Tugas |
 |:--:|:---|:---:|:---|
-| 1. | [Nama Anggota 1] | [NIM 1] | Modul Deteksi Tepi, Segmentasi Objek, dan Split and Merge |
-| 2. | [Nama Anggota 2] | [NIM 2] | Modul Deep Learning (CamVid), Arsitektur GUI MATLAB, dan Integrasi Sistem |
+| 1. | Joel Hotlan Haris Siahaan | 13523025 | Modul Deteksi Tepi, Segmentasi Objek, dan Split and Merge |
+| 2. | Ivant Samuel Silaban | 13523129 | Modul Deep Learning (CamVid), Arsitektur GUI MATLAB, dan Integrasi Sistem |
 
 ---
 
@@ -22,18 +22,19 @@ Proyek ini disusun untuk memenuhi **Tugas 3 IF4073 Pemrosesan Citra Digital – 
 ```text
 IF4073_PCD_Tugas3/
 ├── README.md                          # Dokumentasi utama dan panduan eksekusi
-├── PEMBAGIAN_TUGAS_DAN_WORKFLOW.md    # Dokumen panduan kerja dan workflow kelompok
+├── requirements.txt                   # Daftar dependensi Python (Deep Learning)
 ├── data/
 │   ├── bsds500/                       # 8 citra data uji BSDS500
-│   └── camvid/                        # Data uji & skrip download dataset CamVid
+│   └── camvid/
+│       └── splits/                    # Daftar split deterministik 60/20/20 & metadata CamVid
 ├── src/
 │   ├── edge_segmentation/             # [Modul 1] Operator deteksi tepi manual & segmentasi objek
 │   ├── split_merge/                   # [Modul 2] Algoritma split and merge berbasis quadtree
 │   ├── deep_learning/                 # [Modul 3] Pipeline transfer learning, evaluasi, & inferensi CamVid
-│   │   └── weights/                   # Bobot model pretrained/fine-tuned
-│   └── gui/                           # [Modul 4] MATLAB App Designer (.mlapp)
+│   │   └── weights/                   # Bobot terlatih (best_model.pth) & artefak evaluasi
+│   └── gui/                           # [Modul 4] GUI MATLAB (SegmentationApp.m & gui_helpers.m)
 └── docs/
-    └── NIM1_NIM2_Tugas3_IF4073.pdf    # Laporan tugas besar format PDF
+    └── contract.md                    # Kontrak integrasi antar-modul
 ```
 
 ---
@@ -43,19 +44,16 @@ IF4073_PCD_Tugas3/
 ### 1. Lingkungan MATLAB
 * **MATLAB Versi**: R2021a atau yang lebih baru disarankan.
 * **Toolbox yang Diperlukan**:
-  * *Image Processing Toolbox* (untuk fungsi Canny dan penanganan I/O citra).
-  * *Deep Learning Toolbox* (opsional, jika model CNN dijalankan langsung via MATLAB).
+  * *Image Processing Toolbox* (untuk operator Canny, operasi morfologi, dan penanganan I/O citra).
 
-### 2. Lingkungan Python (Jika Deep Learning menggunakan Python)
-* **Python Versi**: 3.9+
-* **Library**:
+### 2. Lingkungan Python (Modul Deep Learning / Semantic Segmentation)
+* **Python Versi**: 3.9+ (disarankan memakai virtual environment `venv/` pada root repositori agar terdeteksi otomatis oleh GUI MATLAB).
+* **Library Utama**:
   * `torch`, `torchvision` (PyTorch)
-  * `numpy`, `scipy`
-  * `opencv-python` atau `Pillow`
-  * `albumentations` (opsional untuk augmentasi)
+  * `numpy`, `Pillow`, `matplotlib`, `tqdm`, `scikit-learn`, `optuna`
 * Instalasi dependensi Python:
   ```bash
-  pip install -r src/deep_learning/requirements.txt
+  pip install -r requirements.txt
   ```
 
 ---
@@ -65,18 +63,17 @@ IF4073_PCD_Tugas3/
 ### Menjalankan Melalui MATLAB GUI
 1. Buka aplikasi **MATLAB**.
 2. Arahkan *Current Folder* ke direktori root repositori ini (`IF4073_PCD_Tugas3/`).
-3. Tambahkan folder `src` dan seluruh subfoldernya ke dalam search path MATLAB:
+3. Tambahkan folder `src/gui` (atau seluruh `src`) ke dalam search path MATLAB:
    ```matlab
    addpath(genpath('src'));
-   addpath(genpath('data'));
    ```
 4. Jalankan aplikasi GUI:
    * Ketik `app = SegmentationApp;` pada Command Window, **ATAU**
-   * Buka file `src/gui/SegmentationApp.mlapp` melalui MATLAB App Designer dan klik tombol **Run**.
+   * Buka file `src/gui/SegmentationApp.m` di MATLAB Editor lalu klik **Run**.
 5. Gunakan tab navigasi pada GUI untuk memilih mode segmentasi:
-   * **Tab 1: Deteksi Tepi**: Pilih operator (Sobel/Prewitt/Roberts/Laplace/LoG/Canny), atur threshold, dan lakukan segmentasi objek.
-   * **Tab 2: Split and Merge**: Masukkan parameter threshold homogenitas split dan merge, lalu amati tahapan dekomposisi region.
-   * **Tab 3: Semantic Segmentation**: Muat citra uji jalan, jalankan inferensi CNN, dan amati pemetaan 11 kelas warna.
+   * **Tab 1: Deteksi Tepi**: Pilih operator (Sobel/Prewitt/Roberts/Laplace/LoG/Canny), atur threshold, sigma, radius closing, dan min area, lalu jalankan segmentasi objek.
+   * **Tab 2: Split and Merge**: Atur parameter `splitThresh`, `mergeThresh`, dan `minBlock`, lalu amati tahap dekomposisi Quadtree dan hasil penggabungan wilayah.
+   * **Tab 3: Semantic Segmentation**: Muat citra uji jalan (CamVid), jalankan inferensi CNN secara luring memakai `weights/best_model.pth`, lalu atur opacity overlay dan amati distribusi 11 kelas.
 
 ---
 
@@ -87,6 +84,7 @@ IF4073_PCD_Tugas3/
    * Tersimpan di dalam folder `data/bsds500/`.
 
 2. **CamVid Dataset (Semantic Segmentation)**:
-   * **Citra Asli**: [701_StillsRaw_full.zip](http://web4.cs.ucl.ac.uk/staff/g.brostow/MotionSegRecData/files/701_StillsRaw_full.zip)
-   * **Anotasi Label**: [LabeledApproved_full.zip](http://web4.cs.ucl.ac.uk/staff/g.brostow/MotionSegRecData/data/LabeledApproved_full.zip)
+   * **Citra Asli (UCL)**: [701_StillsRaw_full.zip](http://web4.cs.ucl.ac.uk/staff/g.brostow/MotionSegRecData/files/701_StillsRaw_full.zip)
+   * **Anotasi Label (UCL)**: [LabeledApproved_full.zip](http://web4.cs.ucl.ac.uk/staff/g.brostow/MotionSegRecData/data/LabeledApproved_full.zip)
+   * **Mirror Kaggle**: [carlolepelaars/camvid](https://www.kaggle.com/datasets/carlolepelaars/camvid) (seluruh 701 citra digabung lalu dibagi ulang 60/20/20 pada `data/camvid/splits/`).
    * **11 Kelas Pengelompokan**: Sky, Building, Pole, Road, Pavement, Tree, SignSymbol, Fence, Car, Pedestrian, Bicyclist.
