@@ -34,7 +34,7 @@ IF4073_PCD_Tugas3/
 │   │   └── weights/                   # Bobot terlatih (best_model.pth) & artefak evaluasi
 │   └── gui/                           # [Modul 4] GUI MATLAB (SegmentationApp.m & gui_helpers.m)
 └── docs/
-    └── contract.md                    # Kontrak integrasi antar-modul
+│   └── 13523025_13523129_Tugas3_IF4073.pdf
 ```
 
 ---
